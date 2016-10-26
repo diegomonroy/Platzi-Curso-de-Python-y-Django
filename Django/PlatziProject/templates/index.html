@@ -1,17 +1,19 @@
 <!DOCTYPE html>
 <html lang="en">
 	<head>
+		{% load staticfiles %}
 		<meta charset="UTF-8">
 		<title>Document</title>
+		<link rel="stylesheet" href="{% static 'css/base.css' %}"
 	</head>
 	<body>
+		<a href="{% url 'new_product' %}">New Products</a>
 		<h1 style="color: red;">
 			Hola
 		</h1>
 		<ul>
 			{% for pr in product %}
-				<li>{{ pr.name }} | {{ pr.description }}
-				</li>
+				<li><a href="{% url 'product_detail' pk=pr.pk %}">{{ pr.name }}</a> | {{ pr.description }} | <img src="{{ pr.image.url }}" alt=""></li>
 			{% endfor %}
 		</ul>
 	</body>
