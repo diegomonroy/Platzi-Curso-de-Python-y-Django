@@ -1,11 +1,26 @@
 from django.http import HttpResponse, HttpResponseRedirect
 from django.template import loader
-from django.shortcuts import render, get_object_or_404
+from django.shortcuts import (
+    render,
+    get_object_or_404,
+    redirect
+)
+from django.contrib.auth import authenticate, login
+from django.contrib.auth.models import User
+
+from django.views.generic import ListView
+from django.views.generic.detail import DetailView
+
 from .forms import ProductForm
+from .models import Product
 
 # Create your views here.
 
-from .models import Product
+class ProductList(ListView):
+    model = Product
+
+class ProductDetail(DetailView):
+    model = Product
 
 def hello_world(request):
 #     return render(request, 'index.html')
@@ -38,3 +53,20 @@ def new_product(request):
         'form': form
     }
     return HttpResponse(template.render(context, request))
+
+def auth_login(request):
+    if request.method == 'POST':
+        action = request.POST.get('action', None)
+        username = request.POST.get('username', None)
+        password = request.POST.get('password', None)
+
+        if action == 'signup':
+            user = User.objects.create_user(username=username,
+                                            password=password)
+            user.save()
+        elif action == 'login':
+            user = authenticate(username=username, password=password)
+            login(request, user)
+            return redirect('/')
+    context = {}
+    return render(request, 'login/login.html', context)
